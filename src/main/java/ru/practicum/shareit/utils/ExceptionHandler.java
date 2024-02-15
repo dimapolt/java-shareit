@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.practicum.shareit.exceptions.AlreadyExistException;
@@ -32,7 +33,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
                 .getAllErrors()
                 .forEach((error) -> response.add(error.getDefaultMessage()));
 
-         log.warn("Ошибка, связанная с невалидными полями User");
+         log.warn("Ошибка, связанная с невалидными полями");
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -60,4 +61,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn(exception.getMessage());
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDescription> catchIllegalArgumentException(IllegalArgumentException exception) {
+        log.warn(exception.getMessage());
+        return new ResponseEntity<>(new ErrorDescription(exception.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
 }

@@ -2,52 +2,53 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.utils.DtoMapper;
+import ru.practicum.shareit.exceptions.AlreadyExistException;
+import ru.practicum.shareit.exceptions.NoDataFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserStorage;
 import ru.practicum.shareit.utils.Validator;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
     private final Validator validator;
-    private final DtoMapper dtoMapper;
 
     @Override
-    public UserDto createUser(User user) {
-        validator.checkEmailOnExistAndValid(user, userStorage.getAllUsers());
-        User userReturn = userStorage.createUser(user);
+    public User createUser(User user) {
+        User userReturn;
+        try {
+            userReturn = userStorage.save(user);
+        } catch (RuntimeException exception) {
+            throw new AlreadyExistException(String.format("Адрес электронной почты '%s' занят!", user.getEmail()));
+        }
 
-        return dtoMapper.toDto(userReturn);
+        return userReturn;
     }
 
     @Override
-    public UserDto getUser(Long id) {
-        User user = userStorage.getUser(id);
-        validator.checkOnExist(id, user);
+    public User getUser(Long id) {
+        Optional<User> userO =  userStorage.findById(id);
 
-        return dtoMapper.toDto(user);
+        if (userO.isEmpty()) {
+            throw new NoDataFoundException(String.format("Пользователь с id=%d не найден", id));
+        }
+        return userO.get();
     }
 
     @Override
-    public List<UserDto> getAllUsers() {
-        List<User> users = userStorage.getAllUsers();
-
-        return users.stream()
-                .map(dtoMapper::toDto)
-                .collect(Collectors.toList());
+    public List<User> getAllUsers() {
+        return userStorage.findAll();
     }
 
     @Override
-    public UserDto updateUser(Long id, User newUser) {
-        User oldUser = userStorage.getUser(id);
+    public User updateUser(Long id, User newUser) {
+        User oldUser = getUser(id);
         newUser.setId(id);
-        validator.checkEmailOnExistAndValid(newUser, userStorage.getAllUsers());
+        validator.checkEmailOnExistAndValid(newUser, userStorage.findAll());
 
         if (newUser.getName() == null  || newUser.getName().isBlank()) {
             newUser.setName(oldUser.getName());
@@ -56,16 +57,14 @@ public class UserServiceImpl implements UserService {
             newUser.setEmail(oldUser.getEmail());
         }
 
-        User userUpdate = userStorage.updateUser(id, newUser);
-
-        return dtoMapper.toDto(userUpdate);
+        return userStorage.save(newUser);
     }
 
     @Override
     public String deleteUser(Long id) {
-        User user = userStorage.deleteUser(id);
-        validator.checkOnExist(id, user);
+        User user = getUser(id);
 
+        userStorage.delete(user);
         return String.format("Удалён пользователь с id = %d", id);
     }
 

@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.gateway.GatewayApi;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoFull;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
@@ -13,10 +16,10 @@ import java.util.List;
 /**
  * TODO Sprint add-controllers.
  */
-@RestController
-@RequiredArgsConstructor
 @Slf4j
+@RestController
 @RequestMapping("/items")
+@RequiredArgsConstructor
 public class ItemController {
     private final GatewayApi gatewayApi;
 
@@ -28,13 +31,14 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@PathVariable Long itemId) {
+    public ItemDtoFull getItem(@PathVariable Long itemId,
+                               @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         log.info("Запрос на получение вещи по id.");
-        return gatewayApi.getItem(itemId);
+        return gatewayApi.getItem(itemId, ownerId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemDtoFull> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Запрос на получение всех вещей пользователя с id=" + userId);
         return gatewayApi.getAllByUser(userId);
     }
@@ -57,6 +61,14 @@ public class ItemController {
     public List<ItemDto> searchByName(@RequestParam String text) {
         log.info("Запрос на поиск по названию.");
         return gatewayApi.searchByName(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@RequestBody @Valid Comment comment,
+                                    @PathVariable Long itemId,
+                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Запрос на создание комментария");
+        return gatewayApi.createComment(userId, itemId, comment);
     }
 
 }
