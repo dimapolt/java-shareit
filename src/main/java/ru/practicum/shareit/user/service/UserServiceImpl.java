@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(Long id) {
-        Optional<User> userO =  userStorage.findById(id);
+        Optional<User> userO = userStorage.findById(id);
 
         if (userO.isEmpty()) {
             throw new NoDataFoundException(String.format("Пользователь с id=%d не найден", id));
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
         newUser.setId(id);
         validator.checkEmailOnExistAndValid(newUser, userStorage.findAll());
 
-        if (newUser.getName() == null  || newUser.getName().isBlank()) {
+        if (newUser.getName() == null || newUser.getName().isBlank()) {
             newUser.setName(oldUser.getName());
         }
         if (newUser.getEmail() == null || newUser.getName().isBlank()) {

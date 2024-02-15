@@ -81,7 +81,7 @@ public class GatewayApi {
         Item item = itemService.getItem(id);
         List<Comment> comments = itemService.getCommentsByItem(item.getId());
 
-        if (comments == null){
+        if (comments == null) {
             comments = new ArrayList<>();
         }
 
@@ -212,7 +212,7 @@ public class GatewayApi {
     public CommentDto createComment(Long userId, Long itemId, Comment comment) {
         Booking booking = bookingService.getBookingByUserAndItem(userId, itemId).orElseThrow(
                 () -> new ValidationException(String.format("Пользователь с id=%d" +
-                            " не брал вещь с id=%d", userId, itemId)));
+                        " не брал вещь с id=%d", userId, itemId)));
 
         if (booking.getEnd().isAfter(LocalDateTime.now())) {
             throw new ValidationException("Отзыв можно оставить только после окончания аренды!");

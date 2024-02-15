@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 public class ShareItApp {
 
-	public static void main(String[] args) {
-		log.info("Приложение запущено.");
-		SpringApplication.run(ShareItApp.class, args);
-	}
+    public static void main(String[] args) {
+        log.info("Приложение запущено.");
+        SpringApplication.run(ShareItApp.class, args);
+    }
 
 }

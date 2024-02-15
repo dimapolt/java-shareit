@@ -23,17 +23,17 @@ import java.util.List;
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     @NonNull
-    protected ResponseEntity<Object>  handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                             @NonNull HttpHeaders headers,
-                                                                             @NonNull HttpStatus status,
-                                                                             @NonNull WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  @NonNull HttpHeaders headers,
+                                                                  @NonNull HttpStatus status,
+                                                                  @NonNull WebRequest request) {
         List<Object> response = new ArrayList<>();
 
-         ex.getBindingResult()
+        ex.getBindingResult()
                 .getAllErrors()
                 .forEach((error) -> response.add(error.getDefaultMessage()));
 
-         log.warn("Ошибка, связанная с невалидными полями");
+        log.warn("Ошибка, связанная с невалидными полями");
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -41,7 +41,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler
     public ResponseEntity<String> catchAlreadyExistException(AlreadyExistException exception) {
         log.warn(exception.getMessage());
-        return new ResponseEntity<>(exception.getMessage(),HttpStatus.CONFLICT);
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler
