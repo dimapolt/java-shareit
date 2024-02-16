@@ -17,7 +17,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     // CURRENT
     List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long userId,
-                                                                               LocalDateTime start, LocalDateTime end);
+                                                                                 LocalDateTime start, LocalDateTime end);
 
     // PAST
     List<Booking> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(Long userId, LocalDateTime now);
@@ -27,7 +27,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     // WAITING
     List<Booking> findAllByBookerIdAndStartIsAfterAndStatusOrderByStartDesc(Long userId, LocalDateTime now,
-                                                                          BookingStatus status);
+                                                                            BookingStatus status);
 
     // REJECTED
     List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Long userId, BookingStatus status);
@@ -40,7 +40,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     // CURRENT
     List<Booking> findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long ownerId,
-                                                                                  LocalDateTime start, LocalDateTime end);
+                                                                                    LocalDateTime start, LocalDateTime end);
 
     // PAST
     List<Booking> findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(Long ownerId, LocalDateTime now);
@@ -50,7 +50,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     // WAITING
     List<Booking> findAllByItemOwnerIdAndStartIsAfterAndStatusOrderByStartDesc(Long ownerId,
-                                                                             LocalDateTime now, BookingStatus status);
+                                                                               LocalDateTime now, BookingStatus status);
 
     // REJECTED
     List<Booking> findAllByItemOwnerIdAndStatusOrderByStartDesc(Long ownerId, BookingStatus status);
@@ -58,9 +58,12 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
     /**
      * For items
      */
-    Booking findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(Long itemId, LocalDateTime now, BookingStatus status);
 
-    Booking findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(Long itemId, LocalDateTime now, BookingStatus status);
+    Booking findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(Long itemId, LocalDateTime now,
+                                                                   BookingStatus status);
+
+    Booking findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(Long itemId, LocalDateTime now,
+                                                                   BookingStatus status);
 
     /**
      * For comments

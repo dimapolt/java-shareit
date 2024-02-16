@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NoDataFoundException;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -19,11 +20,13 @@ public class ItemServiceImpl implements ItemService {
     private final CommentStorage commentStorage;
 
     @Override
+    @Transactional
     public Item createItem(Item item) {
         return itemStorage.save(item);
     }
 
     @Override
+    @Transactional
     public Item getItem(Long id) {
         Optional<Item> itemO = itemStorage.findById(id);
 
@@ -35,16 +38,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public List<Item> getAllByUser(Long userId) {
         return itemStorage.findAllByOwnerId(userId);
     }
 
     @Override
+    @Transactional
     public List<Item> getAllItems() {
         return itemStorage.findAll();
     }
 
     @Override
+    @Transactional
     public Item updateItem(Item item) {
         Item oldItem = getItem(item.getId());
 
@@ -62,6 +68,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public String deleteItem(Long itemId) {
         Item item = getItem(itemId);
         itemStorage.delete(item);
@@ -70,11 +77,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Comment createComment(Comment comment) {
         return commentStorage.save(comment);
     }
 
     @Override
+    @Transactional
     public List<Comment> getCommentsByItem(Long id) {
         return commentStorage.findAllByItemId(id);
     }

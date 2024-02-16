@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -17,10 +18,12 @@ import java.util.Optional;
 public class BookingService {
     private final BookingStorage bookingStorage;
 
+    @Transactional
     public Booking createBooking(Booking booking) {
         return bookingStorage.save(booking);
     }
 
+    @Transactional
     public Booking getBooking(Long id) {
         Optional<Booking> bookingO = bookingStorage.findById(id);
 
@@ -31,6 +34,7 @@ public class BookingService {
         return bookingO.get();
     }
 
+    @Transactional
     public List<Booking> getAllBookingByUser(Long userId, BookingState state) {
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings;
@@ -62,6 +66,7 @@ public class BookingService {
         return bookings;
     }
 
+    @Transactional
     public List<Booking> getAllBookingByOwner(Long userId, BookingState state) {
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings;
@@ -93,18 +98,22 @@ public class BookingService {
         return bookings;
     }
 
+    @Transactional
     public Booking getLastOrNext(Long itemId, String flag) {
+        LocalDateTime now = LocalDateTime.now();
 
         if (flag.equals("last")) {
-            return bookingStorage.findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(itemId, LocalDateTime.now(),
+            return bookingStorage.findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(itemId,
+                    now,
                     BookingStatus.APPROVED);
         } else if (flag.equals("next")) {
             return bookingStorage.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemId, LocalDateTime.now(),
                     BookingStatus.APPROVED);
         }
-        return null;
+        return new Booking();
     }
 
+    @Transactional
     public Optional<Booking> getBookingByUserAndItem(Long userId, Long itemId) {
         return bookingStorage.findFirstByItemIdAndBookerIdAndEndBefore(itemId, userId, LocalDateTime.now());
     }

@@ -23,6 +23,7 @@ import ru.practicum.shareit.utils.Validator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -101,6 +102,7 @@ public class GatewayApi {
         List<Item> items = itemService.getAllByUser(userId);
 
         return items.stream()
+                .sorted(Comparator.comparing(Item::getId))
                 .map(item -> {
                     Booking last = bookingService.getLastOrNext(item.getId(), "last");
                     Booking next = bookingService.getLastOrNext(item.getId(), "next");
