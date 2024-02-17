@@ -8,9 +8,6 @@ import ru.practicum.shareit.gateway.GatewayApi;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Slf4j
 @RestController
 @RequestMapping(path = "/bookings")

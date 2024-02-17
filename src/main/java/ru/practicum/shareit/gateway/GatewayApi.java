@@ -37,9 +37,6 @@ public class GatewayApi {
     private final ItemService itemService;
     private final BookingService bookingService;
 
-    /**
-     * User
-     */
     public UserDto createUser(User user) {
         return dtoMapper.toDto(userService.createUser(user));
     }
@@ -62,9 +59,6 @@ public class GatewayApi {
         return userService.deleteUser(id);
     }
 
-    /**
-     * Item
-     */
     public ItemDto createItem(Item item, Long ownerId) {
         validator.checkId(new Long[]{ownerId});
         if (item.getAvailable() == null) {
@@ -143,9 +137,6 @@ public class GatewayApi {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Booking
-     */
     public BookingDto createBooking(BookingDto bookingDto, Long userId) {
         User user = userService.getUser(userId);
         Item item = itemService.getItem(bookingDto.getItemId());

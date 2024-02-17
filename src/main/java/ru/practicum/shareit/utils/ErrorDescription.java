@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Класс содержащий сообщение о причинах исключения и код ошибки, для ответа "фронтенду"
+ * Класс содержащий сообщение о причинах исключения для ответа "фронтенду"
  */
 @AllArgsConstructor
 @Getter

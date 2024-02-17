@@ -9,15 +9,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookingStorage extends JpaRepository<Booking, Long> {
-    /**
-     * Booker
-     */
     // ALL
     List<Booking> findAllByBookerIdOrderByStartDesc(Long userId);
 
     // CURRENT
-    List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long userId,
-                                                                                 LocalDateTime start, LocalDateTime end);
+    List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long userId, LocalDateTime start,
+                                                                                 LocalDateTime end);
 
     // PAST
     List<Booking> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(Long userId, LocalDateTime now);
@@ -32,15 +29,12 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
     // REJECTED
     List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Long userId, BookingStatus status);
 
-    /**
-     * Owner
-     */
     // ALL
     List<Booking> findAllByItemOwnerIdOrderByStartDesc(Long ownerId);
 
     // CURRENT
-    List<Booking> findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long ownerId,
-                                                                                    LocalDateTime start, LocalDateTime end);
+    List<Booking> findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long ownerId, LocalDateTime start,
+                                                                                    LocalDateTime end);
 
     // PAST
     List<Booking> findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(Long ownerId, LocalDateTime now);
@@ -55,18 +49,11 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
     // REJECTED
     List<Booking> findAllByItemOwnerIdAndStatusOrderByStartDesc(Long ownerId, BookingStatus status);
 
-    /**
-     * For items
-     */
-
     Booking findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(Long itemId, LocalDateTime now,
                                                                    BookingStatus status);
 
     Booking findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(Long itemId, LocalDateTime now,
                                                                    BookingStatus status);
 
-    /**
-     * For comments
-     */
     Optional<Booking> findFirstByItemIdAndBookerIdAndEndBefore(Long itemId, Long bookerId, LocalDateTime now);
 }
