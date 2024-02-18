@@ -2,48 +2,57 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.dto.ItemDto;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exceptions.NoDataFoundException;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.storage.CommentStorage;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.utils.DtoMapper;
-import ru.practicum.shareit.utils.Validator;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
-    private final Validator validator;
-    private final DtoMapper dtoMapper;
+    private final CommentStorage commentStorage;
 
     @Override
-    public ItemDto createItem(Item item) {
-        Item itemReturn = itemStorage.createItem(item);
-        return dtoMapper.toDto(itemReturn);
+    @Transactional
+    public Item createItem(Item item) {
+        return itemStorage.save(item);
     }
 
     @Override
-    public ItemDto getItem(Long id) {
-        Item itemReturn = itemStorage.getItem(id);
-        validator.checkOnExist(id, itemReturn);
+    @Transactional
+    public Item getItem(Long id) {
+        Optional<Item> itemO = itemStorage.findById(id);
 
-        return dtoMapper.toDto(itemReturn);
+        if (itemO.isEmpty()) {
+            throw new NoDataFoundException(String.format("Позиция с id = %d не найдена!", id));
+        }
+
+        return itemO.get();
     }
 
     @Override
-    public List<ItemDto> getAllItems() {
-        return itemStorage.getAllItems().stream()
-                .map(dtoMapper::toDto)
-                .collect(Collectors.toList());
+    @Transactional
+    public List<Item> getAllByUser(Long userId) {
+        return itemStorage.findAllByOwnerId(userId);
     }
 
     @Override
-    public ItemDto updateItem(Item item) {
-        Item oldItem = itemStorage.getItem(item.getId());
-        validator.checkOnExist(oldItem.getId(), oldItem);
+    @Transactional
+    public List<Item> getAllItems() {
+        return itemStorage.findAll();
+    }
+
+    @Override
+    @Transactional
+    public Item updateItem(Item item) {
+        Item oldItem = getItem(item.getId());
 
         if (item.getName() != null) {
             oldItem.setName(item.getName());
@@ -55,15 +64,27 @@ public class ItemServiceImpl implements ItemService {
             oldItem.setAvailable(item.getAvailable());
         }
 
-        return dtoMapper.toDto(itemStorage.updateItem(oldItem));
+        return itemStorage.save(oldItem);
     }
 
     @Override
+    @Transactional
     public String deleteItem(Long itemId) {
-        Item itemReturn = itemStorage.deleteItem(itemId);
-        validator.checkOnExist(itemId, itemReturn);
+        Item item = getItem(itemId);
+        itemStorage.delete(item);
 
         return String.format("Удалена позиция с id = %d", itemId);
     }
 
+    @Override
+    @Transactional
+    public Comment createComment(Comment comment) {
+        return commentStorage.save(comment);
+    }
+
+    @Override
+    @Transactional
+    public List<Comment> getCommentsByItem(Long id) {
+        return commentStorage.findAllByItemId(id);
+    }
 }

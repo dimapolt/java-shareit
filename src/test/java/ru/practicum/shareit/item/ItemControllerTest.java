@@ -12,8 +12,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.gateway.GatewayApi;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +36,17 @@ class ItemControllerTest {
     private ObjectMapper objectMapper;
     private Item item;
     private ItemDto itemDto;
+    private ItemDtoFull itemDtoFull;
 
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(itemController).build();
         objectMapper = new ObjectMapper();
-        UserDto user = new UserDto(1L, "User1", "user@ya.ru");
-        item = new Item(1L, "TestItem", "Description", true, user);
-        itemDto = new ItemDto(1L, "TestItem", "Description", true, user);
+        User user = new User(1L, "User1", "user@ya.ru");
+        UserDto userDto = new UserDto(1L, "User1", "user@ya.ru");
+        item = new Item(1L, "TestItem", "Description", true, user, new ItemRequest());
+        itemDto = new ItemDto(1L, "TestItem", "Description", true, userDto, new ItemRequest());
+        itemDtoFull = new ItemDtoFull(1L, "TestItem", "Description", true, null, null, null);
     }
 
     @Test
@@ -56,8 +62,9 @@ class ItemControllerTest {
 
     @Test
     void getItemTest() throws Exception {
-        when(gatewayApi.getItem(1L)).thenReturn(itemDto);
-        mockMvc.perform(get("/items/{itemId}", 1L))
+        when(gatewayApi.getItem(1L, 1L)).thenReturn(itemDtoFull);
+        mockMvc.perform(get("/items/{itemId}", 1L)
+                        .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.name").value("TestItem"))
