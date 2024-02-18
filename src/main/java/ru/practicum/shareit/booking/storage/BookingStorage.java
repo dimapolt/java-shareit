@@ -49,11 +49,11 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
     // REJECTED
     List<Booking> findAllByItemOwnerIdAndStatusOrderByStartDesc(Long ownerId, BookingStatus status);
 
-    Booking findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(Long itemId, LocalDateTime now,
-                                                                   BookingStatus status);
+    List<Booking> findFirstByItemIdInAndStartBeforeAndStatusOrderByEndDesc(List<Long> itemsId, LocalDateTime now,
+                                                                     BookingStatus status);
 
-    Booking findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(Long itemId, LocalDateTime now,
-                                                                   BookingStatus status);
+    List<Booking> findFirstByItemIdInAndStartAfterAndStatusOrderByStartAsc(List<Long> itemsId, LocalDateTime now,
+                                                                     BookingStatus status);
 
     Optional<Booking> findFirstByItemIdAndBookerIdAndEndBefore(Long itemId, Long bookerId, LocalDateTime now);
 }

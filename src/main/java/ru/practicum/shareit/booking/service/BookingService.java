@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.exceptions.NoDataFoundException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,18 +100,18 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking getLastOrNext(Long itemId, String flag) {
+    public List<Booking> getLastOrNext(List<Long> itemId, String flag) {
         LocalDateTime now = LocalDateTime.now();
 
         if (flag.equals("last")) {
-            return bookingStorage.findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(itemId,
+            return bookingStorage.findFirstByItemIdInAndStartBeforeAndStatusOrderByEndDesc(itemId,
                     now,
                     BookingStatus.APPROVED);
         } else if (flag.equals("next")) {
-            return bookingStorage.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemId, LocalDateTime.now(),
+            return bookingStorage.findFirstByItemIdInAndStartAfterAndStatusOrderByStartAsc(itemId, LocalDateTime.now(),
                     BookingStatus.APPROVED);
         }
-        return new Booking();
+        return new ArrayList<>();
     }
 
     @Transactional
