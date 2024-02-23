@@ -22,10 +22,7 @@ import ru.practicum.shareit.utils.DtoMapper;
 import ru.practicum.shareit.utils.Validator;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,8 +78,11 @@ public class GatewayApi {
         }
 
         if (item.getOwner().getId().equals(ownerId)) {
-            Booking last = bookingService.getLastOrNext(item.getId(), "last");
-            Booking next = bookingService.getLastOrNext(item.getId(), "next");
+            List<Booking> lastList = bookingService.getLastOrNext(List.of(item.getId()), "last");
+            List<Booking> nextList = bookingService.getLastOrNext(List.of(item.getId()), "next");
+            Booking last = lastList.isEmpty() ? null : lastList.get(0);
+            Booking next = nextList.isEmpty() ? null : nextList.get(0);
+
             return dtoMapper.toItemDtoFull(item, last, next, comments);
         }
 
@@ -95,11 +95,26 @@ public class GatewayApi {
 
         List<Item> items = itemService.getAllByUser(userId);
 
+        List<Long> itemsId = items.stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+
+        List<Booking> lastList = bookingService.getLastOrNext(itemsId, "last");
+        List<Booking> nextList = bookingService.getLastOrNext(itemsId, "next");
+
+        Map<Long, Booking> lastMap = lastList.stream()
+                .collect(Collectors.toMap(booking -> booking.getItem().getId(),
+                                                booking -> booking));
+        Map<Long, Booking> nextMap = nextList.stream()
+                .collect(Collectors.toMap(booking -> booking.getItem().getId(),
+                        booking -> booking));
+
+
         return items.stream()
                 .sorted(Comparator.comparing(Item::getId))
                 .map(item -> {
-                    Booking last = bookingService.getLastOrNext(item.getId(), "last");
-                    Booking next = bookingService.getLastOrNext(item.getId(), "next");
+                    Booking last = lastMap.get(item.getId());
+                    Booking next = nextMap.get(item.getId());
                     List<Comment> comments = itemService.getCommentsByItem(item.getId());
                     return dtoMapper.toItemDtoFull(item, last, next, comments);
                 })
