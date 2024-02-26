@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentStorage;
 import ru.practicum.shareit.item.storage.ItemStorage;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,13 +40,19 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public List<Item> getAllByUser(Long userId) {
-        return itemStorage.findAllByOwnerId(userId);
+    public List<Item> getAllByUser(Long userId, Pageable pageable) {
+        return itemStorage.findAllByOwnerId(userId, pageable);
     }
 
     @Override
     @Transactional
-    public List<Item> getAllItems() {
+    public List<Item> getAllByRequestsId(List<Long> requestsId) {
+        return itemStorage.findAllByRequestIdIn(requestsId);
+    }
+
+    @Override
+    @Transactional
+    public List<Item> getAllItems(Pageable pageable) {
         return itemStorage.findAll();
     }
 

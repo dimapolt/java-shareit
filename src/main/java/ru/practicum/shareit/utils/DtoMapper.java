@@ -8,6 +8,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
@@ -22,11 +24,6 @@ public class DtoMapper {
                 user.getEmail());
     }
 
-    public User toEntity(UserDto userDto) {
-        return new User(userDto.getId(),
-                userDto.getName(),
-                userDto.getEmail());
-    }
 
     public ItemDto toDto(Item item) {
         return new ItemDto(item.getId(),
@@ -34,17 +31,9 @@ public class DtoMapper {
                 item.getDescription(),
                 item.getAvailable(),
                 toDto(item.getOwner()),
-                item.getRequest());
+                item.getRequestId());
     }
 
-    public Item toEntity(ItemDto itemDto) {
-        return new Item(itemDto.getId(),
-                itemDto.getName(),
-                itemDto.getDescription(),
-                itemDto.getAvailable(),
-                toEntity(itemDto.getOwner()),
-                itemDto.getRequest());
-    }
 
     public BookingDto toDto(Booking booking) {
         UserDto booker = toDto(booking.getBooker());
@@ -104,6 +93,21 @@ public class DtoMapper {
                 comment.getText(),
                 comment.getAuthor().getName(),
                 comment.getCreated());
+    }
+
+    public ItemRequestDto toDto(ItemRequest itemRequest, List<Item> items) {
+        List<ItemRequestDto.ItemDto> itemsDto = items.stream()
+                .map(item -> new ItemRequestDto.ItemDto(item.getId(),
+                                                                  item.getName(),
+                                                                  item.getDescription(),
+                                                                  item.getAvailable(),
+                                                          item.getRequestId()))
+                .collect(Collectors.toList());
+
+        return new ItemRequestDto(itemRequest.getId(),
+                                  itemRequest.getDescription(),
+                                  itemRequest.getCreated(),
+                                  itemsDto);
     }
 
 }

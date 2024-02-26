@@ -1,6 +1,7 @@
 package ru.practicum.shareit.gateway;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -15,6 +16,9 @@ import ru.practicum.shareit.item.dto.ItemDtoFull;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -33,6 +37,7 @@ public class GatewayApi {
     private final UserService userService;
     private final ItemService itemService;
     private final BookingService bookingService;
+    private final ItemRequestService requestService;
 
     public UserDto createUser(User user) {
         return dtoMapper.toDto(userService.createUser(user));
@@ -60,6 +65,9 @@ public class GatewayApi {
         validator.checkId(new Long[]{ownerId});
         if (item.getAvailable() == null) {
             throw new ValidationException("Нет информации о доступности вещи!");
+        }
+        if (item.getRequestId() != null) {
+            requestService.getRequest(item.getRequestId());
         }
 
         User user = userService.getUser(ownerId);
@@ -89,11 +97,11 @@ public class GatewayApi {
         return dtoMapper.toItemDtoFull(item, null, null, comments);
     }
 
-    public List<ItemDtoFull> getAllByUser(Long userId) {
+    public List<ItemDtoFull> getAllByUser(Long userId, Integer from, Integer size) {
         userService.getUser(userId);
         validator.checkId(new Long[]{userId});
 
-        List<Item> items = itemService.getAllByUser(userId);
+        List<Item> items = itemService.getAllByUser(userId, PageRequest.of(from / size, size));
 
         List<Long> itemsId = items.stream()
                 .map(Item::getId)
@@ -104,7 +112,7 @@ public class GatewayApi {
 
         Map<Long, Booking> lastMap = lastList.stream()
                 .collect(Collectors.toMap(booking -> booking.getItem().getId(),
-                                                booking -> booking));
+                        booking -> booking));
         Map<Long, Booking> nextMap = nextList.stream()
                 .collect(Collectors.toMap(booking -> booking.getItem().getId(),
                         booking -> booking));
@@ -137,13 +145,13 @@ public class GatewayApi {
         return itemService.deleteItem(itemId);
     }
 
-    public List<ItemDto> searchByName(String text) {
+    public List<ItemDto> searchByName(String text, Integer from, Integer size) {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
 
         String searchName = text.toLowerCase();
-        List<Item> items = itemService.getAllItems();
+        List<Item> items = itemService.getAllItems(PageRequest.of(from / size, size));
         return items.stream()
                 .filter(item -> (item.getName().toLowerCase().contains(searchName)
                         || item.getDescription().toLowerCase().contains(searchName))
@@ -197,22 +205,22 @@ public class GatewayApi {
         return dtoMapper.toDto(bookingService.createBooking(booking));
     }
 
-    public List<BookingDto> getAllBookingByUser(Long userId, String state) {
+    public List<BookingDto> getAllBookingByUser(Long userId, String state, Integer from, Integer size) {
         userService.getUser(userId); // Проверяем существует ли такой пользователь
         BookingState bookingState = BookingState.from(state).orElseThrow(
                 () -> new IllegalArgumentException("Unknown state: " + state));
 
-        return bookingService.getAllBookingByUser(userId, bookingState).stream()
+        return bookingService.getAllBookingByUser(userId, bookingState, PageRequest.of(from / size, size)).stream()
                 .map(dtoMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public List<BookingDto> getAllBookingByOwner(Long userId, String state) {
+    public List<BookingDto> getAllBookingByOwner(Long userId, String state, Integer from, Integer size) {
         userService.getUser(userId); // Проверяем существует ли такой пользователь
         BookingState bookingState = BookingState.from(state).orElseThrow(
                 () -> new IllegalArgumentException("Unknown state: " + state));
 
-        return bookingService.getAllBookingByOwner(userId, bookingState).stream()
+        return bookingService.getAllBookingByOwner(userId, bookingState, PageRequest.of(from / size, size)).stream()
                 .map(dtoMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -231,5 +239,50 @@ public class GatewayApi {
         comment.setCreated(LocalDateTime.now());
 
         return dtoMapper.toDto(itemService.createComment(comment));
+    }
+
+    public ItemRequestDto createRequest(Long userId, ItemRequest itemRequest) {
+        User requester = userService.getUser(userId);
+        itemRequest.setRequestor(requester);
+        itemRequest.setCreated(LocalDateTime.now());
+        return dtoMapper.toDto(requestService.createRequest(itemRequest), new ArrayList<>());
+    }
+
+    public List<ItemRequestDto> getRequestsByUser(Long userId) {
+        userService.getUser(userId);
+        List<ItemRequest> itemRequests = requestService.getRequestsByUser(userId);
+        List<Long> requestsId = itemRequests.stream()
+                .map(ItemRequest::getId)
+                .collect(Collectors.toList());
+        List<Item> items = itemService.getAllByRequestsId(requestsId);
+
+        return itemRequests.stream()
+                .map(itemRequest -> dtoMapper.toDto(itemRequest,
+                        items.stream()
+                                .filter(item -> item.getRequestId().equals(itemRequest.getId()))
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+    }
+
+    public List<ItemRequestDto> getRequestsByParam(Long userId, Integer from, Integer size) {
+        List<ItemRequest> itemRequests = requestService.getRequestsByParam(userId, from, size);
+        List<Long> requestsId = itemRequests.stream()
+                .map(ItemRequest::getId)
+                .collect(Collectors.toList());
+        List<Item> items = itemService.getAllByRequestsId(requestsId);
+
+        return itemRequests.stream()
+                .map(itemRequest -> dtoMapper.toDto(itemRequest,
+                        items.stream()
+                                .filter(item -> item.getRequestId().equals(itemRequest.getId()))
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+    }
+
+    public ItemRequestDto getRequest(Long userId, Long requestId) {
+        userService.getUser(userId);
+        ItemRequest itemRequest = requestService.getRequest(requestId);
+        List<Item> items = itemService.getAllByRequestsId(List.of(requestId));
+        return dtoMapper.toDto(itemRequest, items);
     }
 }

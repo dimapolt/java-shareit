@@ -15,8 +15,11 @@ import ru.practicum.shareit.exceptions.MethodNotAllowedException;
 import ru.practicum.shareit.exceptions.NoDataFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
@@ -34,6 +37,19 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
                 .forEach((error) -> response.add(error.getDefaultMessage()));
 
         log.warn("Ошибка, связанная с невалидными полями");
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> onConstraintValidationException(
+            ConstraintViolationException e
+    ) {
+        List<Object> response = e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
