@@ -18,6 +18,7 @@ public class ItemRequestDto {
     String description;
     LocalDateTime created;
     List<ItemDto> items;
+
     @Getter
     @Setter
     @AllArgsConstructor

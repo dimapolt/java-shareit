@@ -98,16 +98,16 @@ public class DtoMapper {
     public ItemRequestDto toDto(ItemRequest itemRequest, List<Item> items) {
         List<ItemRequestDto.ItemDto> itemsDto = items.stream()
                 .map(item -> new ItemRequestDto.ItemDto(item.getId(),
-                                                                  item.getName(),
-                                                                  item.getDescription(),
-                                                                  item.getAvailable(),
-                                                          item.getRequestId()))
+                        item.getName(),
+                        item.getDescription(),
+                        item.getAvailable(),
+                        item.getRequestId()))
                 .collect(Collectors.toList());
 
         return new ItemRequestDto(itemRequest.getId(),
-                                  itemRequest.getDescription(),
-                                  itemRequest.getCreated(),
-                                  itemsDto);
+                itemRequest.getDescription(),
+                itemRequest.getCreated(),
+                itemsDto);
     }
 
 }

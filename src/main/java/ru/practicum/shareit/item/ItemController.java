@@ -40,9 +40,9 @@ public class ItemController {
     @GetMapping
     public List<ItemDtoFull> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId,
                                          @RequestParam(value = "from",
-                                                       defaultValue = "0") @Min(0) Integer from,
+                                                 defaultValue = "0") @Min(0) Integer from,
                                          @RequestParam(value = "size",
-                                                       defaultValue = "100") @Min(1) Integer size) {
+                                                 defaultValue = "100") @Min(1) Integer size) {
         log.info("Запрос на получение всех вещей пользователя с id=" + userId);
         return gatewayApi.getAllByUser(userId, from, size);
     }
@@ -64,9 +64,9 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchByName(@RequestParam String text,
                                       @RequestParam(value = "from",
-                                                    defaultValue = "0") @Min(0) Integer from,
+                                              defaultValue = "0") @Min(0) Integer from,
                                       @RequestParam(value = "size",
-                                                    defaultValue = "100") @Min(1) Integer size) {
+                                              defaultValue = "100") @Min(1) Integer size) {
         log.info("Запрос на поиск по названию.");
         return gatewayApi.searchByName(text, from, size);
     }

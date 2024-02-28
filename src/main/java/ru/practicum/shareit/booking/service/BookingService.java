@@ -61,7 +61,7 @@ public class BookingService {
                 break;
             case REJECTED:
                 bookings = bookingStorage.findAllByBookerIdAndStatusOrderByStartDesc(userId,
-                                                                               BookingStatus.REJECTED, pageable);
+                        BookingStatus.REJECTED, pageable);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown state: " + state);
@@ -84,11 +84,11 @@ public class BookingService {
                 break;
             case PAST:
                 bookings = bookingStorage.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId, now,
-                                                                                             pageable);
+                        pageable);
                 break;
             case FUTURE:
                 bookings = bookingStorage.findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(userId, now,
-                                                                                              pageable);
+                        pageable);
                 break;
             case WAITING:
                 bookings = bookingStorage.findAllByItemOwnerIdAndStartIsAfterAndStatusOrderByStartDesc(userId,
@@ -96,7 +96,7 @@ public class BookingService {
                 break;
             case REJECTED:
                 bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId,
-                                                                                BookingStatus.REJECTED, pageable);
+                        BookingStatus.REJECTED, pageable);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown state: " + state);

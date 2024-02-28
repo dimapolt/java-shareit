@@ -36,11 +36,11 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDto> getRequestsByParam(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                    @RequestParam(value = "from",
-                                                                 defaultValue = "0") @Min(0) Integer from,
+                                                           defaultValue = "0") @Min(0) Integer from,
                                                    @RequestParam(value = "size",
-                                                                 defaultValue = "100") @Min(1) Integer size) {
+                                                           defaultValue = "100") @Min(1) Integer size) {
         log.info("Получение всех запросов постранично");
-        return gatewayApi.getRequestsByParam(userId,from, size);
+        return gatewayApi.getRequestsByParam(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
