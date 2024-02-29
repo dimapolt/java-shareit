@@ -53,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public List<Item> getAllItems(Pageable pageable) {
-        return itemStorage.findAll();
+        return itemStorage.findAll(pageable).getContent();
     }
 
     @Override
