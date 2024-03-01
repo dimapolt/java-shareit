@@ -146,8 +146,8 @@ class ValidatorTest {
     @Test
     void checkBooking_whenEndEqualsStart_validationExceptionThrown() {
         item.setOwner(new User(2L, "Another user", "another@user.com"));
-        booking.setStart(LocalDateTime.now().plusDays(1));
-        booking.setEnd(LocalDateTime.now().plusDays(1));
+        booking.setStart(LocalDateTime.MAX.minusMonths(12));
+        booking.setEnd(LocalDateTime.MAX.minusMonths(12));
 
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> validator.checkBooking(booking));
