@@ -13,7 +13,6 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +29,7 @@ public class Validator {
     }
 
     public void checkId(Long[] args) {
-        Optional<Long> longO = Arrays.stream(args).filter(Objects::isNull).findFirst();
+        Optional<Long> longO = Arrays.stream(args).filter(aLong -> aLong.equals(0L)).findFirst();
 
         if (longO.isPresent()) {
             throw new MethodNotAllowedException("Пустой id");
