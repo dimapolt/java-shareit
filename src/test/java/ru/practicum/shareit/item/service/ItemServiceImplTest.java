@@ -88,10 +88,10 @@ class ItemServiceImplTest {
 
     @Test
     void getAllItems_always_InvokeStorageMethod() {
-        when(itemStorage.findAll(PageRequest.of(0,10))).thenReturn( new PageImpl<>(List.of()));
-        
-        itemService.getAllItems(PageRequest.of(0,10));
-        verify(itemStorage).findAll(PageRequest.of(0,10));
+        when(itemStorage.findAll(PageRequest.of(0, 10))).thenReturn(new PageImpl<>(List.of()));
+
+        itemService.getAllItems(PageRequest.of(0, 10));
+        verify(itemStorage).findAll(PageRequest.of(0, 10));
     }
 
     @Test

@@ -159,7 +159,7 @@ class GatewayApiTest {
         when(itemService.getItem(anyLong())).thenReturn(item);
         when(itemService.getCommentsByItem(anyLong())).thenReturn(null);
 
-        gatewayApi.getItem(1L,2L);
+        gatewayApi.getItem(1L, 2L);
 
         verify(validator).checkId(new Long[]{1L});
         verify(itemService).getItem(1L);
@@ -176,7 +176,7 @@ class GatewayApiTest {
         when(itemService.getCommentsByItem(anyLong())).thenReturn(comments);
         when(bookingService.getLastOrNext(anyList(), anyString())).thenReturn(bookings);
 
-        gatewayApi.getItem(1L,1L);
+        gatewayApi.getItem(1L, 1L);
 
         verify(validator).checkId(new Long[]{1L});
         verify(itemService).getItem(1L);
@@ -199,7 +199,7 @@ class GatewayApiTest {
 
         verify(userService).getUser(1L);
         verify(validator).checkId(any());
-        verify(itemService).getAllByUser(1L, PageRequest.of(0,10));
+        verify(itemService).getAllByUser(1L, PageRequest.of(0, 10));
         verify(bookingService, times(2)).getLastOrNext(anyList(), anyString());
         verify(dtoMapper).toItemDtoFull(item, booking, booking, comments);
     }
@@ -354,7 +354,7 @@ class GatewayApiTest {
         when(bookingService.getBooking(anyLong())).thenReturn(booking);
 
         NoDataFoundException exception = assertThrows(NoDataFoundException.class,
-                ()-> gatewayApi.setStatus(1L, 1L, false));
+                () -> gatewayApi.setStatus(1L, 1L, false));
 
         assertEquals("Запрос на изменение статуса бронирования доступен только " +
                 "для владельца вещи", exception.getMessage());
@@ -367,7 +367,7 @@ class GatewayApiTest {
         when(bookingService.getBooking(anyLong())).thenReturn(booking);
 
         ValidationException exception = assertThrows(ValidationException.class,
-                ()-> gatewayApi.setStatus(1L, 1L, false));
+                () -> gatewayApi.setStatus(1L, 1L, false));
 
         assertEquals("Бронирование уже одобрено", exception.getMessage());
     }
@@ -391,7 +391,7 @@ class GatewayApiTest {
         when(userService.getUser(anyLong())).thenReturn(user);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                ()-> gatewayApi.getAllBookingByUser(1L, "UNKNOWN", 0, 10));
+                () -> gatewayApi.getAllBookingByUser(1L, "UNKNOWN", 0, 10));
 
         assertEquals("Unknown state: UNKNOWN", exception.getMessage());
     }
@@ -415,7 +415,7 @@ class GatewayApiTest {
         when(userService.getUser(anyLong())).thenReturn(user);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                ()-> gatewayApi.getAllBookingByOwner(1L, "UNKNOWN", 0, 10));
+                () -> gatewayApi.getAllBookingByOwner(1L, "UNKNOWN", 0, 10));
 
         assertEquals("Unknown state: UNKNOWN", exception.getMessage());
     }
@@ -441,7 +441,7 @@ class GatewayApiTest {
         when(bookingService.getBookingByUserAndItem(anyLong(), anyLong())).thenReturn(Optional.empty());
 
         ValidationException exception = assertThrows(ValidationException.class,
-                ()-> gatewayApi.createComment(1L, 1L, new Comment()));
+                () -> gatewayApi.createComment(1L, 1L, new Comment()));
 
         assertEquals("Пользователь с id=1 не брал вещь с id=1", exception.getMessage());
     }
@@ -452,7 +452,7 @@ class GatewayApiTest {
         when(bookingService.getBookingByUserAndItem(anyLong(), anyLong())).thenReturn(Optional.of(booking));
 
         ValidationException exception = assertThrows(ValidationException.class,
-                ()-> gatewayApi.createComment(1L, 1L, new Comment()));
+                () -> gatewayApi.createComment(1L, 1L, new Comment()));
 
         assertEquals("Отзыв можно оставить только после окончания аренды!", exception.getMessage());
     }

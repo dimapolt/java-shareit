@@ -283,6 +283,6 @@ class BookingServiceTest {
     @Test
     void getBookingByUserAndItem() {
         bookingService.getBookingByUserAndItem(1L, 1L);
-        verify(bookingStorage).findFirstByItemIdAndBookerIdAndEndBefore(anyLong(), anyLong(),any());
+        verify(bookingStorage).findFirstByItemIdAndBookerIdAndEndBefore(anyLong(), anyLong(), any());
     }
 }
