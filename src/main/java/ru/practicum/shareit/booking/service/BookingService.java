@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -10,6 +11,7 @@ import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.exceptions.NoDataFoundException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,30 +37,31 @@ public class BookingService {
     }
 
     @Transactional
-    public List<Booking> getAllBookingByUser(Long userId, BookingState state) {
+    public List<Booking> getAllBookingByUser(Long userId, BookingState state, Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings;
 
         switch (state) {
             case ALL:
-                bookings = bookingStorage.findAllByBookerIdOrderByStartDesc(userId);
+                bookings = bookingStorage.findAllByBookerIdOrderByStartDesc(userId, pageable);
                 break;
             case CURRENT:
                 bookings = bookingStorage.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
-                        now, now);
+                        now, now, pageable);
                 break;
             case PAST:
-                bookings = bookingStorage.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId, now);
+                bookings = bookingStorage.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId, now, pageable);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId, now);
+                bookings = bookingStorage.findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId, now, pageable);
                 break;
             case WAITING:
                 bookings = bookingStorage.findAllByBookerIdAndStartIsAfterAndStatusOrderByStartDesc(userId,
-                        now, BookingStatus.WAITING);
+                        now, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findAllByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
+                bookings = bookingStorage.findAllByBookerIdAndStatusOrderByStartDesc(userId,
+                        BookingStatus.REJECTED, pageable);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown state: " + state);
@@ -67,30 +70,33 @@ public class BookingService {
     }
 
     @Transactional
-    public List<Booking> getAllBookingByOwner(Long userId, BookingState state) {
+    public List<Booking> getAllBookingByOwner(Long userId, BookingState state, Pageable pageable) {
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings;
 
         switch (state) {
             case ALL:
-                bookings = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(userId);
+                bookings = bookingStorage.findAllByItemOwnerIdOrderByStartDesc(userId, pageable);
                 break;
             case CURRENT:
                 bookings = bookingStorage.findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
-                        now, now);
+                        now, now, pageable);
                 break;
             case PAST:
-                bookings = bookingStorage.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId, now);
+                bookings = bookingStorage.findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId, now,
+                        pageable);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(userId, now);
+                bookings = bookingStorage.findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(userId, now,
+                        pageable);
                 break;
             case WAITING:
                 bookings = bookingStorage.findAllByItemOwnerIdAndStartIsAfterAndStatusOrderByStartDesc(userId,
-                        now, BookingStatus.WAITING);
+                        now, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
+                bookings = bookingStorage.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId,
+                        BookingStatus.REJECTED, pageable);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown state: " + state);
@@ -99,18 +105,18 @@ public class BookingService {
     }
 
     @Transactional
-    public Booking getLastOrNext(Long itemId, String flag) {
+    public List<Booking> getLastOrNext(List<Long> itemId, String flag) {
         LocalDateTime now = LocalDateTime.now();
 
         if (flag.equals("last")) {
-            return bookingStorage.findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(itemId,
+            return bookingStorage.findFirstByItemIdInAndStartBeforeAndStatusOrderByEndDesc(itemId,
                     now,
                     BookingStatus.APPROVED);
         } else if (flag.equals("next")) {
-            return bookingStorage.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(itemId, LocalDateTime.now(),
+            return bookingStorage.findFirstByItemIdInAndStartAfterAndStatusOrderByStartAsc(itemId, LocalDateTime.now(),
                     BookingStatus.APPROVED);
         }
-        return new Booking();
+        return new ArrayList<>();
     }
 
     @Transactional

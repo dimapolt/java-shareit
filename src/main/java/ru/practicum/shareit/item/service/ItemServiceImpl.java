@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NoDataFoundException;
@@ -39,14 +40,20 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public List<Item> getAllByUser(Long userId) {
-        return itemStorage.findAllByOwnerId(userId);
+    public List<Item> getAllByUser(Long userId, Pageable pageable) {
+        return itemStorage.findAllByOwnerId(userId, pageable);
     }
 
     @Override
     @Transactional
-    public List<Item> getAllItems() {
-        return itemStorage.findAll();
+    public List<Item> getAllByRequestsId(List<Long> requestsId) {
+        return itemStorage.findAllByRequestIdIn(requestsId);
+    }
+
+    @Override
+    @Transactional
+    public List<Item> getAllItems(Pageable pageable) {
+        return itemStorage.findAll(pageable).getContent();
     }
 
     @Override

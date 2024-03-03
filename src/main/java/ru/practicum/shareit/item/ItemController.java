@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.gateway.GatewayApi;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -11,12 +12,14 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
     private final GatewayApi gatewayApi;
 
@@ -35,9 +38,13 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoFull> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemDtoFull> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                         @RequestParam(value = "from",
+                                                 defaultValue = "0") @Min(0) Integer from,
+                                         @RequestParam(value = "size",
+                                                 defaultValue = "100") @Min(1) Integer size) {
         log.info("Запрос на получение всех вещей пользователя с id=" + userId);
-        return gatewayApi.getAllByUser(userId);
+        return gatewayApi.getAllByUser(userId, from, size);
     }
 
     @PatchMapping("/{itemId}")
@@ -55,9 +62,13 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchByName(@RequestParam String text) {
+    public List<ItemDto> searchByName(@RequestParam String text,
+                                      @RequestParam(value = "from",
+                                              defaultValue = "0") @Min(0) Integer from,
+                                      @RequestParam(value = "size",
+                                              defaultValue = "100") @Min(1) Integer size) {
         log.info("Запрос на поиск по названию.");
-        return gatewayApi.searchByName(text);
+        return gatewayApi.searchByName(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
