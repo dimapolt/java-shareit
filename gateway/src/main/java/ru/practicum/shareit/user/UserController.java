@@ -10,7 +10,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -27,7 +26,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<Object> getUser(@PathVariable @Min(value = 1,
-                                                             message = "Неверный идентификатор") Long userId) {
+            message = "Неверный идентификатор") Long userId) {
         log.info("Запрос на получение пользователя по id.");
         return userClient.getUser(userId);
     }
@@ -40,7 +39,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> updateUser(@PathVariable @Min(value = 1,
-                                                                message = "Неверный идентификатор")Long userId,
+            message = "Неверный идентификатор") Long userId,
                                              @RequestBody UserDto user) {
         log.info("Запрос на обновление пользователя.");
         return userClient.updateUser(userId, user);

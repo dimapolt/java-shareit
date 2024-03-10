@@ -51,4 +51,11 @@ public class GatewayExceptionsHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorDescription> catchIllegalArgumentException(IllegalArgumentException exception) {
+        log.warn(exception.getMessage());
+        return new ResponseEntity<>(new ErrorDescription(exception.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
 }
