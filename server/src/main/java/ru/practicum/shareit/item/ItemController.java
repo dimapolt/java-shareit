@@ -11,7 +11,6 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j
@@ -38,9 +37,9 @@ public class ItemController {
     @GetMapping
     public List<ItemDtoFull> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId,
                                          @RequestParam(value = "from",
-                                                 defaultValue = "0") @Min(0) Integer from,
+                                                 defaultValue = "0") Integer from,
                                          @RequestParam(value = "size",
-                                                 defaultValue = "100") @Min(1) Integer size) {
+                                                 defaultValue = "100") Integer size) {
         log.info("Запрос на получение всех вещей пользователя с id=" + userId);
         return gatewayApi.getAllByUser(userId, from, size);
     }
