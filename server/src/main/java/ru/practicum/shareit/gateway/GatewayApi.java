@@ -39,8 +39,7 @@ public class GatewayApi {
     private final BookingService bookingService;
     private final ItemRequestService requestService;
 
-    public UserDto createUser(UserDto userDto) {
-        User user = dtoMapper.toEntity(userDto);
+    public UserDto createUser(User user) {
         return dtoMapper.toDto(userService.createUser(user));
     }
 
@@ -62,12 +61,14 @@ public class GatewayApi {
         return dtoMapper.toDto(userService.deleteUser(id));
     }
 
-    public ItemDto createItem(ItemDto itemDto, Long ownerId) {
-        if (itemDto.getRequestId() != null) {
-            requestService.getRequest(itemDto.getRequestId());
+    public ItemDto createItem(Item item, Long ownerId) {
+        if (item.getAvailable() == null) {
+            throw new ValidationException("Нет информации о доступности вещи!");
+        }
+        if (item.getRequestId() != null) {
+            requestService.getRequest(item.getRequestId());
         }
 
-        Item item = dtoMapper.toEntity(itemDto);
         User user = userService.getUser(ownerId);
         item.setOwner(user);
 

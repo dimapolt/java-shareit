@@ -39,11 +39,11 @@ public class DtoMapper {
 
     public Item toEntity(ItemDto itemDto) {
         return new Item(null,
-                        itemDto.getName(),
-                        itemDto.getDescription(),
-                        itemDto.getAvailable(),
-                        null,
-                        itemDto.getRequestId());
+                itemDto.getName(),
+                itemDto.getDescription(),
+                itemDto.getAvailable(),
+                null,
+                itemDto.getRequestId());
     }
 
     public ItemDtoFull toItemDtoFull(Item item, Booking lastBooking, Booking nextBooking, List<Comment> comments) {

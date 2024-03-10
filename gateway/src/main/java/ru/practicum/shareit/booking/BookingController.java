@@ -26,9 +26,9 @@ public class BookingController {
     public ResponseEntity<Object> getBookings(@RequestHeader("X-Sharer-User-Id") long userId,
                                               @RequestParam(name = "state", defaultValue = "all") String stateParam,
                                               @PositiveOrZero
-                                                  @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                              @RequestParam(name = "from", defaultValue = "0") Integer from,
                                               @Positive
-                                                  @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                              @RequestParam(name = "size", defaultValue = "10") Integer size) {
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
@@ -51,8 +51,8 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public ResponseEntity<Object> setStatus(@PathVariable Long bookingId,
-                                @RequestHeader("X-Sharer-User-Id") Long userId,
-                                @RequestParam("approved") Boolean approved) {
+                                            @RequestHeader("X-Sharer-User-Id") Long userId,
+                                            @RequestParam("approved") Boolean approved) {
         log.info("Запрос на установление статуса");
         return bookingClient.setStatus(bookingId, userId, approved);
         //return bookingClient.setApprove(userId, bookingId, approved);
@@ -60,12 +60,12 @@ public class BookingController {
 
     @GetMapping("/owner")
     public ResponseEntity<Object> getAllBookingByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                 @RequestParam(name = "state", required = false,
-                                                         defaultValue = "ALL") String stateParam,
-                                                 @RequestParam(value = "from",
-                                                         defaultValue = "0") @Min(0) Integer from,
-                                                 @RequestParam(value = "size",
-                                                         defaultValue = "100") @Min(1) Integer size) {
+                                                       @RequestParam(name = "state", required = false,
+                                                               defaultValue = "ALL") String stateParam,
+                                                       @RequestParam(value = "from",
+                                                               defaultValue = "0") @Min(0) Integer from,
+                                                       @RequestParam(value = "size",
+                                                               defaultValue = "100") @Min(1) Integer size) {
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         log.info("Запрос на получение бронирования для владельца");

@@ -23,9 +23,9 @@ public class ItemController {
     @PostMapping
     @Validated({ItemValidate.OnCreate.class})
     public ResponseEntity<Object> createItem(@RequestBody
-                                  @Valid ItemDto item,
+                                             @Valid ItemDto item,
                                              @RequestHeader("X-Sharer-User-Id")
-                                  @Min(value = 1, message = "Неверный идентификатор пользователя") Long userId) {
+                                             @Min(value = 1, message = "Неверный идентификатор пользователя") Long userId) {
         log.info("Запрос на добавление вещи.");
         return itemClient.createItem(item, userId);
     }
@@ -39,18 +39,18 @@ public class ItemController {
 
     @GetMapping
     public ResponseEntity<Object> getAllItems(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @RequestParam(value = "from",
-                                                 defaultValue = "0") @Min(0) Integer from,
-                                         @RequestParam(value = "size",
-                                                 defaultValue = "100") @Min(1) Integer size) {
+                                              @RequestParam(value = "from",
+                                                      defaultValue = "0") @Min(0) Integer from,
+                                              @RequestParam(value = "size",
+                                                      defaultValue = "100") @Min(1) Integer size) {
         log.info("Запрос на получение всех вещей пользователя с id=" + userId);
         return itemClient.getAllItems(userId, from, size);
     }
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> updateItem(@RequestBody ItemDto item,
-                              @PathVariable Long itemId,
-                              @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                             @PathVariable Long itemId,
+                                             @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Запрос на обновление вещи по id.");
         return itemClient.updateItem(item, itemId, userId);
     }
@@ -63,19 +63,19 @@ public class ItemController {
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchByName(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                      @RequestParam String text,
-                                      @RequestParam(value = "from",
-                                              defaultValue = "0") @Min(0) Integer from,
-                                      @RequestParam(value = "size",
-                                              defaultValue = "100") @Min(1) Integer size) {
+                                               @RequestParam String text,
+                                               @RequestParam(value = "from",
+                                                       defaultValue = "0") @Min(0) Integer from,
+                                               @RequestParam(value = "size",
+                                                       defaultValue = "100") @Min(1) Integer size) {
         log.info("Запрос на поиск по названию.");
         return itemClient.searchByName(userId, text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> createComment(@RequestBody @Valid CommentDto comment,
-                                    @PathVariable Long itemId,
-                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                                @PathVariable Long itemId,
+                                                @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Запрос на создание комментария");
         return itemClient.createComment(comment, itemId, userId);
     }

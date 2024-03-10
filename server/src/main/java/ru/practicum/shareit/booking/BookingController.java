@@ -8,7 +8,6 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.gateway.GatewayApi;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j
@@ -38,7 +37,6 @@ public class BookingController {
                                 @RequestHeader("X-Sharer-User-Id") Long userId,
                                 @RequestParam("approved") Boolean approved) {
         log.info("Запрос на установление статуса");
-        System.out.println("-----------------" + approved);
         return gatewayApi.setStatus(bookingId, userId, approved);
     }
 
@@ -47,9 +45,9 @@ public class BookingController {
                                                 @RequestParam(name = "state", required = false,
                                                         defaultValue = "ALL") String state,
                                                 @RequestParam(value = "from",
-                                                        defaultValue = "0") @Min(0) Integer from,
+                                                        defaultValue = "0") Integer from,
                                                 @RequestParam(value = "size",
-                                                        defaultValue = "100") @Min(1) Integer size) {
+                                                        defaultValue = "100") Integer size) {
         log.info("Запрос на получение бронирования пользователя");
         return gatewayApi.getAllBookingByUser(userId, state, from, size);
     }
@@ -59,9 +57,9 @@ public class BookingController {
                                                  @RequestParam(name = "state", required = false,
                                                          defaultValue = "ALL") String state,
                                                  @RequestParam(value = "from",
-                                                         defaultValue = "0") @Min(0) Integer from,
+                                                         defaultValue = "0") Integer from,
                                                  @RequestParam(value = "size",
-                                                         defaultValue = "100") @Min(1) Integer size) {
+                                                         defaultValue = "100") Integer size) {
         log.info("Запрос на получение бронирования для владельца");
         return gatewayApi.getAllBookingByOwner(userId, state, from, size);
     }

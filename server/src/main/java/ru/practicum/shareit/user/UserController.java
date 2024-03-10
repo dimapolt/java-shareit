@@ -3,23 +3,28 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.gateway.GatewayApi;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping(path = "/users")
+@Validated
 public class UserController {
     private final GatewayApi gatewayApi;
 
     @PostMapping
-    public UserDto createUser(@RequestBody UserDto user) {
+    public UserDto createUser(@RequestBody @Valid User user) {
         log.info("Запрос на получение пользователя по id.");
+        System.out.println(user.getName());
+        System.out.println(user.getEmail());
         return gatewayApi.createUser(user);
     }
 

@@ -22,7 +22,7 @@ public class ItemController {
     private final GatewayApi gatewayApi;
 
     @PostMapping
-    public ItemDto createItem(@RequestBody ItemDto item,
+    public ItemDto createItem(@RequestBody @Valid Item item,
                               @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Запрос на добавление вещи.");
         return gatewayApi.createItem(item, userId);
@@ -61,7 +61,7 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> searchByName(@RequestParam String text,
-                                      @RequestParam(value = "from", defaultValue = "0")  Integer from,
+                                      @RequestParam(value = "from", defaultValue = "0") Integer from,
                                       @RequestParam(value = "size", defaultValue = "100") Integer size) {
         log.info("Запрос на поиск по названию.");
         return gatewayApi.searchByName(text, from, size);
